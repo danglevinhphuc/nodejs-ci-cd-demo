@@ -56,12 +56,12 @@ jobs:
     - name: Build with Docker Compose
       run: |
         export TAG=${{ steps.vars.outputs.sha }}
-        docker-compose build app
+        docker compose build app
 
     - name: Push Image (Commit SHA)
       run: |
         export TAG=${{ steps.vars.outputs.sha }}
-        docker-compose push app
+        docker compose push app
 
     - name: Tag and Push Latest
       run: |
