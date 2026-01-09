@@ -55,16 +55,16 @@ jobs:
 
     - name: Build with Docker Compose
       run: |
-        export TAG=${{ steps.vars.outputs.sha }}
-        docker compose build app
+        # Use project name "ci" to allow predictable image naming
+        docker compose -p ci build app
 
-    - name: Push Image (Commit SHA)
+    - name: Tag and Push Images
       run: |
-        export TAG=${{ steps.vars.outputs.sha }}
-        docker compose push app
-
-    - name: Tag and Push Latest
-      run: |
-        export TAG=${{ steps.vars.outputs.sha }}
-        docker tag phucdang123456/nodejs-ci-cd-demo:$TAG phucdang123456/nodejs-ci-cd-demo:latest
+        export SHA=${{ steps.vars.outputs.sha }}
+        # The image built by compose will be named 'ci-app' (project-service)
+        # We re-tag it for the registry
+        docker tag ci-app phucdang123456/nodejs-ci-cd-demo:$SHA
+        docker tag ci-app phucdang123456/nodejs-ci-cd-demo:latest
+        
+        docker push phucdang123456/nodejs-ci-cd-demo:$SHA
         docker push phucdang123456/nodejs-ci-cd-demo:latest
