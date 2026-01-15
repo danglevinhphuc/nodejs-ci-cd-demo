@@ -2,14 +2,13 @@ pipeline {
     agent any
 
     parameters {
+        string(name: 'DOCKER_REPO', defaultValue: 'yourusername/nodejs-ci-cd-demo', description: 'Docker Hub Repository Name')
         string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'The Docker image tag to deploy (typically the Commit SHA)')
     }
 
     environment {
         // You must define these credentials in Jenkins
         DOCKER_CREDENTIALS_ID = 'docker-hub-creds' 
-        // Replace with your actual repository
-        DOCKER_REPO = 'yourusername/nodejs-ci-cd-demo'
     }
 
     stages {
@@ -33,7 +32,7 @@ pipeline {
                     // Run the deployment script with the providing tag
                     // DETACHED=true ensures it runs in background and doesn't block the Jenkins job
                     withEnv(['DETACHED=true']) {
-                         sh "./run-hub.sh ${params.IMAGE_TAG} ${DOCKER_REPO}"
+                         sh "./run-hub.sh ${params.IMAGE_TAG} ${params.DOCKER_REPO}"
                     }
                 }
             }
