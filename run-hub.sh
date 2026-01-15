@@ -17,6 +17,11 @@ if [ "$(docker ps -aq -f name=postgres-container-name)" ]; then
     docker rm -f postgres-container-name
 fi
 
+# Cleanup existing app container to avoid port conflicts
+if [ "$(docker ps -aq -f name=nodejs-app-container)" ]; then
+    docker rm -f nodejs-app-container
+fi
+
 echo "Start new Postgres container..."
 docker run -d --name postgres-container-name \
   --network my-network \
@@ -48,7 +53,15 @@ MSYS_NO_PATHCONV=1 docker run --rm \
 
 # 4. Run the Application
 echo "Starting application from Hub..."
-docker run --rm -p 3000:3000 \
+
+DOCKER_FLAGS="--rm"
+if [ "$DETACHED" = "true" ]; then
+    DOCKER_FLAGS="-d --rm"
+    echo "Running in detached mode..."
+fi
+
+docker run $DOCKER_FLAGS -p 3000:3000 \
+  --name nodejs-app-container \
   --network my-network \
   -e POSTGRES_HOST=postgres-container-name \
   -e POSTGRES_PASSWORD=mypassword \
