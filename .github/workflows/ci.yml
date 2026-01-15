@@ -51,13 +51,10 @@ jobs:
     - run: npm run lint
     - run: npm test
 
-  # ============================================================================
-  # Build & Push (Only on Push to Main)
-  # ============================================================================
+  
   build-push:
     needs: [backend-ci, frontend-ci]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment: CI/CD Nodejs
     steps:
     - uses: actions/checkout@v4
