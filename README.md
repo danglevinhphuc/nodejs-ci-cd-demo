@@ -34,11 +34,9 @@ docker-compose up --build
 We provide scripts to run the application manually in Docker without `docker-compose` (useful for debugging or single-container testing).
 
 ### 1. Build & Run Locally
-Builds the image from source and runs it connected to a local Postgres container.
+To run the application locally in a container with a database:
 ```bash
-npm run run-prod
-# OR
-sh run.sh
+docker-compose up --build
 ```
 
 ### 2. Run from Docker Hub
@@ -55,8 +53,8 @@ sh run-hub.sh latest myuser/myrepo
 ---
 
 ## ⚙️ CI/CD Configuration
-
-The project uses GitHub Actions (`.github/workflows/ci.yml`).
+ 
+The project uses GitHub Actions (`.github/workflows/ci.yml`) or Jenkins (`Jenkinsfile`).
 
 ### Workflow Steps
 1.  **Lint**: Checks code style (`npm run lint`).

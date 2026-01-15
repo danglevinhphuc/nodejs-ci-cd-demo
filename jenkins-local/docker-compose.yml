@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  jenkins:
+    build: .
+    container_name: jenkins-local
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      # CRITICAL: Mount the host Docker socket to allow Jenkins to run `docker` commands
+      # This enables "Docker-in-Docker" (technically Docker-out-of-Docker)
+      - /var/run/docker.sock:/var/run/docker.sock
+    user: root # Run as root to avoid permission issues with /var/run/docker.sock locally
+
+volumes:
+  jenkins_home:
