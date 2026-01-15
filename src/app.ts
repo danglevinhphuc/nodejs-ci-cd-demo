@@ -11,8 +11,8 @@ export function createApp(itemController: ItemController): Express {
         res.status(200).send('Hello, CI/CD with TypeScript & PostgreSQL!');
     });
 
-    app.get('/health', (req: Request, res: Response) => {
-        res.status(200).json({ status: 'ok' });
+    app.get('/health/:id', (req: Request, res: Response) => {
+        res.status(200).json({ status: 'ok', id: req?.params?.id });
     });
 
     app.use('/items', createItemRouter(itemController));

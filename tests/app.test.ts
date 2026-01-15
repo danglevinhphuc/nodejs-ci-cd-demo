@@ -47,11 +47,11 @@ describe('API Endpoints', () => {
         (getPool() as any).query.mockImplementation(query as any);
     });
 
-    describe('GET /health', () => {
-        it('should return 200 and status ok', async () => {
-            const res = await request(app).get('/health');
+    describe('GET /health/:id', () => {
+        it('should return 200 and status ok with id', async () => {
+            const res = await request(app).get('/health/123');
             expect(res.statusCode).toEqual(200);
-            expect(res.body).toEqual({ status: 'ok' });
+            expect(res.body).toEqual({ status: 'ok', id: '123' });
         });
     });
 
