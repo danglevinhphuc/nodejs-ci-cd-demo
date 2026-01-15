@@ -4,7 +4,7 @@
 # example: sh run-hub.sh bc0e739... myuser/myapp
 
 IMAGE_TAG=${1:-latest}
-REPO_NAME=${2:-your_dockerhub_username/nodejs-ci-cd-demo}
+REPO_NAME=${2:-your_dockerhub_username/mono-repo}
 FULL_IMAGE="${REPO_NAME}:${IMAGE_TAG}"
 
 echo "Running image: $FULL_IMAGE"

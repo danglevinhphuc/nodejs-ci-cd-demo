@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'DOCKER_REPO', defaultValue: 'yourusername/nodejs-ci-cd-demo', description: 'Docker Hub Repository Name')
+        string(name: 'DOCKER_REPO', defaultValue: 'yourusername/mono-repo', description: 'Docker Hub Repository Name')
         string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'The Docker image tag to deploy (typically the Commit SHA)')
     }
 
