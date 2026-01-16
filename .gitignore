@@ -6,3 +6,4 @@ coverage
 .idea
 .vscode
 frontend/node_modules
+backend/node_modules

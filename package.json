@@ -1,0 +1,22 @@
+{
+    "name": "mono-repo",
+    "version": "1.0.0",
+    "description": "Root package for Node.js CI/CD demo monorepo",
+    "private": true,
+    "workspaces": [
+        "frontend",
+        "backend"
+    ],
+    "scripts": {
+        "start:frontend": "npm run dev --workspace=frontend",
+        "start:backend": "npm run dev --workspace=backend",
+        "build:frontend": "npm run build --workspace=frontend",
+        "build:backend": "npm run build --workspace=backend",
+        "test": "npm test --workspaces",
+        "lint": "npm run lint --workspaces",
+        "install:all": "npm install"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+}
