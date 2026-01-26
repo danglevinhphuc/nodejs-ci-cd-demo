@@ -40,8 +40,24 @@ pipeline {
     }
     
     post {
-        always {
+        success {
             cleanWs()
+            slackSend (
+                color: '#36a64f', 
+                message: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+            )
+        }
+        failure {
+            slackSend (
+                color: '#dc3545', 
+                message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+            )
+        }
+        unstable {
+            slackSend (
+                color: '#ffc107', 
+                message: "UNSTABLE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+            )
         }
     }
 }
