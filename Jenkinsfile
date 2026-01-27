@@ -85,7 +85,11 @@ pipeline {
             )
         }
         failure {
-            // Slack sent in Catch block already for specific rollback context, but general failure here too
+            echo "Pipeline failed. Check logs."
+            slackSend (
+                color: '#dc3545', 
+                message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+            )
         }
     }
 }
