@@ -39,7 +39,10 @@ pipeline {
 
                         // 3. Health Check
                         echo "Waiting for application to start..."
-                        sleep(time: 15, unit: "SECONDS") // Give containers time to spin up
+                        sleep(time: 15, unit: "SECONDS") 
+                        
+                        // DEBUG: Check if containers are actually running
+                        sh "docker ps -a"
 
                         // Simple health check via curl
                         // We assume Nginx proxies /health to the backend
