@@ -44,9 +44,9 @@ pipeline {
                         // DEBUG: Check if containers are actually running
                         sh "docker ps -a"
 
-                        // Simple health check via curl
-                        // We assume Nginx proxies /health to the backend
-                        sh "curl -f http://localhost/health" // Fail if curl fails
+                        // Health check using a transient container on the same network
+                        // Jenkins container cannot see 'localhost' of the host, so we use a sidecar curl.
+                        sh "docker run --rm --network my-network curlimages/curl -f http://frontend-container/health" 
                         
                         echo "Health check passed!"
                         
