@@ -24,55 +24,34 @@ pipeline {
                 script {
                     def newTag = params.IMAGE_TAG
                     def repo = params.DOCKER_REPO
+                    def versionFile = env.PREVIOUS_VERSION_FILE
                     
-                    // 1. Read Previous Version
-                    def previousTag = "latest" // Default fallback
-                    if (fileExists(env.PREVIOUS_VERSION_FILE)) {
-                        previousTag = readFile(env.PREVIOUS_VERSION_FILE).trim()
-                    }
-                    echo "Current running version: ${previousTag}"
-                    echo "Attempting to deploy: ${newTag}"
-
                     try {
-                        // 2. Deploy New Version
-                        deployVersion(newTag, repo)
-
-                        // 3. Health Check
-                        echo "Waiting for application to start..."
-                        sleep(time: 15, unit: "SECONDS") 
+                        // Delegate Logic to Bash Script
+                        // We map stdout to Jenkins console automatically
+                        // If script exits with 0 -> Success
+                        // If script exits with 1 -> Failure (Rollback happened)
                         
-                        // DEBUG: Check if containers are actually running
-                        sh "docker ps -a"
-
-                        // Health check using a transient container on the same network
-                        // Jenkins container cannot see 'localhost' of the host, so we use a sidecar curl.
-                        sh "docker run --rm --network my-network curlimages/curl -f http://frontend-container/health" 
+                        // Ensure script is executable
+                        sh "chmod +x scripts/deploy.sh"
                         
-                        echo "Health check passed!"
-                        
-                        // 4. Update State
-                        writeFile file: env.PREVIOUS_VERSION_FILE, text: newTag
-
-                    } catch (Exception e) {
-                        echo "Deployment failed or Health check failed! Error: ${e.message}"
-                        echo "Rolling back to version: ${previousTag}"
-                        
-                        // 5. Rollback
-                        try {
-                            deployVersion(previousTag, repo)
-                            echo "Rollback successful."
-                            
-                            slackSend (
-                                color: '#ff0000', 
-                                message: "⚠️ DEPLOYMENT FAILED for ${newTag}. Rolled back to ${previousTag}. Check logs."
-                            )
-                            
-                            // Re-throw so the build is marked as failure
-                            error "Deployment Failed and Rolled Back."
-                        } catch (Exception rollbackError) {
-                            echo "CRITICAL: Rollback failed!"
-                            error "Rollback Failed: ${rollbackError.message}"
+                        if (isUnix()) {
+                            sh "./scripts/deploy.sh ${newTag} ${repo} ${versionFile}"
+                        } else {
+                            // Windows fallback - assuming Git Bash or similar environment available to Jenkins
+                            bat "bash scripts/deploy.sh ${newTag} ${repo} ${versionFile}"
                         }
+                        
+                    } catch (Exception e) {
+                        // The Script exits with 1 if rollback occurred
+                        echo "Deployment Pipeline Failed (Handled by Bash Script)"
+                        
+                        slackSend (
+                            color: '#ff0000', 
+                            message: "⚠️ DEPLOYMENT FAILED for ${newTag}. Rolled back. Check logs."
+                        )
+                        
+                        error "Deployment Failed."
                     }
                 }
             }
@@ -94,12 +73,5 @@ pipeline {
                 message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
             )
         }
-    }
-}
-
-def deployVersion(tag, repo) {
-    sh 'chmod +x run-hub.sh'
-    withEnv(['DETACHED=true']) {
-         sh "./run-hub.sh ${tag} ${repo}"
     }
 }
